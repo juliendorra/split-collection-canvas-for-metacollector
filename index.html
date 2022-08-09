@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>metacollector</title>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="./collectioncanvas/libraries/metacollector.js"></script>
+
+  <script src="./collectioncanvas/libraries/p5.min.js"></script>
+
+  <script src="./collectioncanvas/sketch.js"></script>
+
+  <!-- https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs -->
+  <link rel="icon" href="favicon.ico"><!-- 32×32 -->
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"><!-- 180×180 -->
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <div id="background-color"></div>
+  <div id="background-image"></div>
+
+  <div id="content">
+
+    <div id="logobox">
+      <img src="meta·collector-beta.svg">
+    </div>
+
+    <div id="taglinebox">
+      <div id="tagline">
+        collecting is creating
+      </div>
+    </div>
+
+    <div id="separator"></div>
+
+    <div id="canvascontainer">
+      <span id="nofragment">
+        No Art Fragments in your collection yet? Pick a few <a
+          href="https://objkt.com/collection/KT1QhxzQthAGa7Vcwj3WmegEorfAmR6F3hyq">
+          from the metacollector collection</a>
+        Or <a href="?collectoraddress=tz1VhN58tCJbboQQoyTgLWoCwDUXBidfcAgd">take a look at Julien's Collection
+          Canvas</a></span>
+    </div>
+
+    <div id="footer">
+
+      <p>Tap or click the collection canvas to fast-forward
+        <a href="http://discord.metacollector.art">Join the Discord to learn more</a>
+      </p>
+
+      <p>
+        Paste your own Tezos wallet address to see your Art Fragments collection blend into a generative artwork
+        <input name="collectoraddress" id="collectoraddress" spellcheck="false" value="" size="40">
+        <span id="drawcollectionbutton">draw my collection canvas</span>
+      </p>
+
+
+    </div>
+  </div>
+
+</body>
+
+</html>
