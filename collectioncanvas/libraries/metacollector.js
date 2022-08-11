@@ -121,7 +121,7 @@ function noTokensToShow() {
     // manage no tokens found
     document.getElementById('nofragment').style.display = "block"
 
-    var ctx = collectionCanvas.getContext('2d');
+    let ctx = collectionCanvas.getContext('2d')
     ctx.resetTransform()
     ctx.font = `${(canvasWidth / 13)}px sans-serif`
     ctx.fillStyle = "white"
