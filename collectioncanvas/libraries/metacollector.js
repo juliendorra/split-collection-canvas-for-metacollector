@@ -178,7 +178,7 @@ function renderSandboxCanvas(url) {
 function iterateMetacollector(event) {
     metacollector.iteration++
     console.log(metacollector.iteration)
-    paintCollection(metacollector)
+    paintCollectionUsingClone(metacollector)
     noTokensToShow()
     onIterationUpdated(metacollector.iteration)
 }
@@ -244,7 +244,10 @@ function onWindowResized() {
         collectionCanvas.style.height = canvasHeight / pixelDensity + "px"
         metacollector.canvas.visualWidth = canvasWidth / pixelDensity
         metacollector.canvas.visualHeight = canvasWidth / pixelDensity
-        paintCollection(metacollector)
+        collectionCanvas.style.height = canvasHeight / pixelDensity + "px"
+        metacollector.canvas.pixelWidth = canvasWidth
+        metacollector.canvas.pixelHeight = canvasWidth
+        paintCollectionUsingClone(metacollector)
     }
 }
 
@@ -399,7 +402,7 @@ function parseTokens(tokens) {
     console.log(tokens)
 
     if (tokens.length < 1) {
-        paintCollection(metacollector)
+        paintCollectionUsingClone(metacollector)
         noTokensToShow()
         return
     }
@@ -468,12 +471,23 @@ function parseTokens(tokens) {
                         let ctx = collectionCanvas.getContext('2d')
                         ctx.resetTransform()
                         ctx.clearRect(0, 0, collectionCanvas.width, collectionCanvas.height)
-                        paintCollection(metacollector)
+                        paintCollectionUsingClone(metacollector)
                     }
                 }
             )
     }
 
+}
+
+function paintCollectionUsingClone(metacollector) {
+
+    if (window.structuredClone) {
+        paintCollection(structuredClone(metacollector))
+    }
+    else {
+        // paintCollection(JSON.parse(JSON.stringify(metacollector)))
+        paintCollection(metacollector)
+    }
 }
 
 function loadingMessage(countdown, nextName) {
