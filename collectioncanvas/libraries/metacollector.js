@@ -520,7 +520,7 @@ function pushImage(bitmap, thisToken, parsedAttributes) {
             attributes: attributes
         }
 
-        if (p5) {
+        if (self.p5) {
             fragment.imageP5 = createP5Image(bitmap)
         }
 
