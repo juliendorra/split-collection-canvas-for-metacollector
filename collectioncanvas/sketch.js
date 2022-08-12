@@ -78,16 +78,23 @@ function paintCollection(metacollector) {
 
         const widthToHeightRatio = fragment.attributes.width / fragment.attributes.height;
 
-        const fragmentPixelWidth = fragment.attributes.size * width * 3;
-        const fragmentPixelHeight = fragment.attributes.size * width * widthToHeightRatio * 3;
+        const fragmentPixelWidth = Math.min(
+            fragment.attributes.size * width * 3,
+            width
+        );
+
+        const fragmentPixelHeight = Math.min(
+            fragment.attributes.size * width * widthToHeightRatio * 3,
+            width * widthToHeightRatio
+        );
 
         const centerX = fragmentPixelWidth / 2;
         const centerY = fragmentPixelHeight / 2;
 
         positionX -= sliceWidth;
-        positionY = (height / 2) + (height / 2 * (fragment.attributes.energy - 0.5))
+        positionY = (height / 2) - (height * (fragment.attributes.energy - 0.5))
 
-        console.log(positionX, positionY)
+        console.log(positionX, positionY, fragment.attributes.energy - 0.5)
 
         ctx.save(); // save point before changing origin and rotating the canvas
 
@@ -97,31 +104,28 @@ function paintCollection(metacollector) {
         let circlesPath = new Path2D();
         circlesPath.ellipse(
             0,
-            -width * 0.25,
+            -height * 0.2,
             sliceWidth * 1.2,
-            height * 0.6,
+            height * 0.8,
             0,
             0, 2 * Math.PI); // could use direction as it's an angle
         circlesPath.ellipse(
             width * 0.1,
-            width * 0.25,
-            sliceWidth * 1.4,
-            height * 0.6,
+            height * 0.4,
+            sliceWidth * 1.2,
+            height * 0.8,
             6.2,
             0, 2 * Math.PI); // could use direction as it's an angle
 
 
-        // // Set the clip to the circles
+        // Set the clip to the circles
         ctx.clip(circlesPath);
 
         ctx.translate(fragmentPixelWidth / 3, 0);
-
         ctx.rotate(fragment.attributes.direction);
-
         ctx.translate(-centerX, -centerY) // centering to center of image
 
         ctx.fillStyle = fragment.attributes.colors[2]
-        ctx.rect(0, 0, fragmentPixelWidth, fragmentPixelHeight);
         ctx.fill()
 
 
