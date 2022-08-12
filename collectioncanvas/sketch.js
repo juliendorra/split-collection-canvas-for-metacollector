@@ -129,13 +129,33 @@ function paintCollection(metacollector) {
         ctx.fill()
 
 
+        // make the background color more varied with some noise
+        ctx.save();
+        ctx.resetTransform()
+        noisyCanvas = document.createElement("canvas");
+        noisyCanvas.width = width / 4;
+        noisyCanvas.height = height / 4;
+        noisyCanvas = perlinNoise(noisyCanvas);
+        //noisyCanvas = randomNoise(noisyCanvas);
+
+        ctx.globalCompositeOperation = "luminosity"
+
+        ctx.drawImage(noisyCanvas,
+            0, 0,
+            width,
+            height
+        )
+        ctx.restore();
+        ctx.globalCompositeOperation = "source-over"
+
+        // draw fragment
         ctx.drawImage(fragment.imageBitmap,
             0, 0,
             fragmentPixelWidth,
             fragmentPixelHeight
         )
 
-        ctx.restore(); // cancel all transformations
+        ctx.restore(); // cancel all transformations for next fragment
 
     }
 
@@ -146,5 +166,45 @@ function drawBackground(ctx) {
     ctx.fillStyle = "white"
     ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fill()
+}
 
+// https://gist.github.com/donpark/1796361
+/* Following canvas-based Perlin generation code originates from
+ * iron_wallaby's code at: http://www.ozoneasylum.com/30982
+ */
+function randomNoise(canvas, x, y, width, height, alpha) {
+    x = x || 0;
+    y = y || 0;
+    width = width || canvas.width;
+    height = height || canvas.height;
+    alpha = alpha || 60;
+    var g = canvas.getContext("2d"),
+        imageData = g.getImageData(x, y, width, height),
+        random = Math.random, // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
+        pixels = imageData.data,
+        n = pixels.length,
+        i = 0;
+    while (i < n) {
+        pixels[i++] = pixels[i++] = pixels[i++] = (200 + random() * 55) | 0;
+        pixels[i++] = alpha;
+    }
+    g.putImageData(imageData, x, y);
+    return canvas;
+}
+
+function perlinNoise(canvas, noise) {
+    noise = noise || randomNoise(canvas);
+    var g = canvas.getContext("2d");
+    g.save();
+
+    /* Scale random iterations onto the canvas to generate Perlin noise. */
+    for (var size = 4; size <= noise.width; size *= 2) {
+        var x = (Math.random() * (noise.width - size)) | 0, // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
+            y = (Math.random() * (noise.height - size)) | 0; // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
+        g.globalAlpha = 4 / size;
+        g.drawImage(noise, x, y, size, size, 0, 0, canvas.width, canvas.height);
+    }
+
+    g.restore();
+    return canvas;
 }
