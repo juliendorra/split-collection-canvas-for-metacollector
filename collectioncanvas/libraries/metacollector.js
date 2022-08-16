@@ -47,8 +47,6 @@ if (!metacollector.walletAddress) {
     metacollector.walletAddress = ""
 }
 
-metacollector.seed = xmur3(metacollector.walletAddress)()
-
 if (!Number.isInteger(metacollector.iteration)) {
     metacollector.iteration = 1
     onIterationUpdated(metacollector.iteration)
@@ -153,8 +151,6 @@ function onKeyDown(event) {
 function onUserEnteredCollectorAddress() {
 
     metacollector.walletAddress = document.getElementById('collectoraddress').value;
-
-    metacollector.seed = xmur3(metacollector.walletAddress)()
 
     url.searchParams.set("collectoraddress", metacollector.walletAddress);
 
@@ -481,13 +477,21 @@ function parseTokens(tokens) {
 
 function paintCollectionUsingClone(metacollector) {
 
+    let clonedMetacollector;
+
     if (window.structuredClone) {
-        paintCollection(structuredClone(metacollector))
+
+        clonedMetacollector = structuredClone(metacollector)
     }
     else {
-        // paintCollection(JSON.parse(JSON.stringify(metacollector)))
-        paintCollection(metacollector)
+
+        clonedMetacollector = JSON.parse(JSON.stringify(metacollector))
     }
+
+    clonedMetacollector.seed = xmur3(metacollector.walletAddress)()
+
+
+    paintCollection(clonedMetacollector, clonedMetacollector.random)
 }
 
 function loadingMessage(countdown, nextName) {
