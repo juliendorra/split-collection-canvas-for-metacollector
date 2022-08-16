@@ -64,7 +64,7 @@ function paintCollection(metacollector) {
     ctx.resetTransform()
     ctx.clearRect(0, 0, width, height)
 
-    drawBackground(ctx);
+    drawBackground(ctx, metacollector.random);
 
     // sorting the fragments from bigger to smaller
     metacollector.artfragments.sort((a, b) => {
@@ -77,19 +77,14 @@ function paintCollection(metacollector) {
     let positionX = width;
     let positionY = height / 2;
 
+    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
     for (let fragment of metacollector.artfragments) {
 
         const widthToHeightRatio = fragment.attributes.width / fragment.attributes.height;
 
-        const fragmentPixelWidth = Math.min(
-            fragment.attributes.size * width * 3,
-            width
-        );
-
-        const fragmentPixelHeight = Math.min(
-            fragment.attributes.size * width * widthToHeightRatio * 3,
-            width * widthToHeightRatio
-        );
+        const fragmentPixelWidth = fragment.attributes.displayWidth * 3
+        const fragmentPixelHeight = fragment.attributes.displayHeight * 3
 
         const centerX = fragmentPixelWidth / 2;
         const centerY = fragmentPixelHeight / 2;
@@ -97,7 +92,6 @@ function paintCollection(metacollector) {
         positionX -= sliceWidth;
         positionY = (height / 2) - (height * (fragment.attributes.energy - 0.5))
 
-        console.log(positionX, positionY, fragment.attributes.energy - 0.5)
 
         ctx.save(); // save point before changing origin and rotating the canvas
 
@@ -124,13 +118,9 @@ function paintCollection(metacollector) {
         // Set the clip to the circles
         ctx.clip(circlesPath);
 
-        ctx.translate(fragmentPixelWidth / 3, 0);
-        ctx.rotate(fragment.attributes.direction);
-        ctx.translate(-centerX, -centerY) // centering to center of image
-
+        // fill with a color from the fragment attributes palette
         ctx.fillStyle = fragment.attributes.colors[2]
         ctx.fill()
-
 
         // make the background color more varied with some noise
         ctx.save();
@@ -138,8 +128,8 @@ function paintCollection(metacollector) {
         noisyCanvas = document.createElement("canvas");
         noisyCanvas.width = width / 4;
         noisyCanvas.height = height / 4;
-        noisyCanvas = perlinNoise(noisyCanvas);
-        //noisyCanvas = randomNoise(noisyCanvas);
+
+        noisyCanvas = perlinNoise(noisyCanvas, metacollector.random);
 
         ctx.globalCompositeOperation = "luminosity"
 
@@ -148,8 +138,13 @@ function paintCollection(metacollector) {
             width,
             height
         )
+        // restore the slice translation
         ctx.restore();
         ctx.globalCompositeOperation = "source-over"
+
+        ctx.translate(fragmentPixelWidth / 3, 0);
+        ctx.rotate(fragment.attributes.direction);
+        ctx.translate(-centerX, -centerY) // centering to center of image
 
         // draw fragment
         ctx.drawImage(fragment.imageBitmap,
@@ -159,31 +154,28 @@ function paintCollection(metacollector) {
         )
 
         ctx.restore(); // cancel all transformations for next fragment
-
     }
-
 }
 
-function drawBackground(ctx) {
+function drawBackground(ctx, random) {
 
-    ctx.fillStyle = "white"
-    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fill()
+    perlinNoise(ctx.canvas, random);
 }
 
-// https://gist.github.com/donpark/1796361
+// modified from https://gist.github.com/donpark/1796361
 /* Following canvas-based Perlin generation code originates from
  * iron_wallaby's code at: http://www.ozoneasylum.com/30982
  */
-function randomNoise(canvas, x, y, width, height, alpha) {
+function randomNoise(canvas, random, x, y, width, height, alpha) {
     x = x || 0;
     y = y || 0;
     width = width || canvas.width;
     height = height || canvas.height;
     alpha = alpha || 60;
+    random = random || Math.random // fallback to Math.random. A deterministic, seeded random is prefered
     var g = canvas.getContext("2d"),
         imageData = g.getImageData(x, y, width, height),
-        random = Math.random, // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
+        random = random,
         pixels = imageData.data,
         n = pixels.length,
         i = 0;
@@ -195,15 +187,16 @@ function randomNoise(canvas, x, y, width, height, alpha) {
     return canvas;
 }
 
-function perlinNoise(canvas, noise) {
-    noise = noise || randomNoise(canvas);
+function perlinNoise(canvas, random, noise) {
+    random = random || Math.random // fallback to Math.random. Adeterministic, seeded random is prefered
+    noise = noise || randomNoise(canvas, random);
     var g = canvas.getContext("2d");
     g.save();
 
     /* Scale random iterations onto the canvas to generate Perlin noise. */
     for (var size = 4; size <= noise.width; size *= 2) {
-        var x = (Math.random() * (noise.width - size)) | 0, // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
-            y = (Math.random() * (noise.height - size)) | 0; // REPLACE WITH DETERMINISTIC RANDOM LIKE ALEA.JS
+        var x = (random() * (noise.width - size)) | 0,
+            y = (random() * (noise.height - size)) | 0;
         g.globalAlpha = 4 / size;
         g.drawImage(noise, x, y, size, size, 0, 0, canvas.width, canvas.height);
     }
