@@ -21,12 +21,13 @@ function createCanvas() {
 // metacollector = {
 //     walletAddress, // first 3 characters tz1 are always identical
 //     seed, // positive integer, pre-hashed from wallet address as a convenience. Use it as the seed of your random number generator
-//     iteration,
+//     random, // deterministic random function pre-seeded with walletAddress. Use metacollector.random instead of Math.random
+//     iteration, // user can advance the iteration by clicking on the canvas. Iterations are bookmarkable and sharable as URL: #23
 //     canvas: {
 //          visualWidth,  // the visual size of the canvas, as set by metacollector
 //          visualHeight,
-//          metacollector.canvas.pixelWidth = canvasWidth,  // the pixel size of the canvas
-//          metacollector.canvas.pixelHeight = canvasWidth
+//          pixelWidth = canvasWidth,  // the pixel size of the canvas
+//          pixelHeight = canvasWidth
 //       },
 //     artfragments: [
 //        {
@@ -36,8 +37,10 @@ function createCanvas() {
 //        attributes: {
 //                family,
 //                size, // normalized [0, 1]
-//                width, // calculated from image for convenience
-//                height, // calculated from image for convenience
+//                width, // calculated from image for convenience. The longest length is always equal to size 
+//                height, // and thus normalized [0, 1]. Ex. width = 0.9 and height= 0.466
+//                displayWidth, // Suggested pixel display size. 
+//                displayHeight,  // Pre-calculated from width/height and canvas size for convenience
 //                direction, // in radians [0, 6.28]
 //                speed, // normalized [0, 1]
 //                influence, // normalized [0, 1]
