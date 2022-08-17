@@ -41,6 +41,8 @@ function createCanvas() {
 //                height, // and thus normalized [0, 1]. Ex. width = 0.9 and height= 0.466
 //                displayWidth, // Suggested pixel display size. 
 //                displayHeight,  // Pre-calculated from width/height and canvas size for convenience
+//                widthToHeightRatio,  // Multiply the width/displayWidth by this value to get the height. 
+//                                     // Useful when scaling the the display size of a fragment, to keep the proportion right
 //                direction, // in radians [0, 6.28]
 //                speed, // normalized [0, 1]
 //                influence, // normalized [0, 1]
@@ -77,20 +79,23 @@ function paintCollection(metacollector) {
     let positionX = width;
     let positionY = height / 2;
 
-    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height); // create a context covering the whole canvas for background fills
 
     for (let fragment of metacollector.artfragments) {
 
-        const widthToHeightRatio = fragment.attributes.width / fragment.attributes.height;
+        let fragmentPixelWidth = fragment.attributes.displayWidth * 3;
+        let fragmentPixelHeight = fragment.attributes.displayHeight * 3;
 
-        const fragmentPixelWidth = fragment.attributes.displayWidth * 3
-        const fragmentPixelHeight = fragment.attributes.displayHeight * 3
+        if (fragmentPixelWidth > width * 3) {
+            fragmentPixelWidth = width * 3;
+            fragmentPixelHeight = fragmentPixelWidth * fragment.widthToHeightRatio;
+        }
 
         const centerX = fragmentPixelWidth / 2;
         const centerY = fragmentPixelHeight / 2;
 
         positionX -= sliceWidth;
-        positionY = (height / 2) - (height * (fragment.attributes.energy - 0.5))
+        positionY = (height / 2) - (height * (fragment.attributes.energy - 0.5));
 
 
         ctx.save(); // save point before changing origin and rotating the canvas
@@ -138,11 +143,10 @@ function paintCollection(metacollector) {
             width,
             height
         )
-        // restore the slice translation
+        // restore to the slice translation and default composition
         ctx.restore();
         ctx.globalCompositeOperation = "source-over"
 
-        ctx.translate(fragmentPixelWidth / 3, 0);
         ctx.rotate(fragment.attributes.direction);
         ctx.translate(-centerX, -centerY) // centering to center of image
 
