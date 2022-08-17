@@ -482,7 +482,7 @@ function paintCollectionUsingClone(metacollector) {
 
     clonedMetacollector.random = new aleaPRNG(metacollector.walletAddress)
 
-    paintCollection(clonedMetacollector, clonedMetacollector.random)
+    paintCollection(clonedMetacollector)
 }
 
 function loadingMessage(countdown, nextName) {
@@ -491,7 +491,7 @@ function loadingMessage(countdown, nextName) {
     ctx.resetTransform()
     ctx.clearRect(0, 0, collectionCanvas.width, collectionCanvas.height)
 
-    paintCollection(mc)
+    paintCollectionUsingClone(mc)
 
     ctx.resetTransform()
     ctx.font = `${(collectionCanvas.width / 20)}px sans-serif`
