@@ -507,18 +507,18 @@ function pushImage(bitmap, thisToken, parsedAttributes) {
 
     let { ...attributes } = parsedAttributes // cloning the attributes
 
-    let widthIsXtimesHeightRatio = bitmap.width / bitmap.height  // ie. 16/9, 4/3
+    attributes.widthToHeightRatio = bitmap.height / bitmap.width   // multiple to get height from width
 
     // set longest side of the image to size normalized value
     // precompute the other side using the real image ratio
     // longest side will always max to 1
     if (bitmap.width > bitmap.height) {
         attributes.width = attributes.size
-        attributes.height = attributes.size / widthIsXtimesHeightRatio
+        attributes.height = attributes.size * attributes.widthToHeightRatio
     }
     else {
         attributes.height = attributes.size
-        attributes.width = attributes.size * widthIsXtimesHeightRatio
+        attributes.width = attributes.size / attributes.widthToHeightRatio
     }
 
     attributes.displayWidth = collectionCanvas.width * attributes.width;
