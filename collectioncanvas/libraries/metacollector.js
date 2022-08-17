@@ -17,7 +17,7 @@ const sandboxTokens = [
     "collectioncanvas/sandbox/tokens/0009.json",
 ]
 
-let metacollector = {
+let mc = {
     walletAddress: "",
     seed: "",
     iteration: 1,
@@ -31,7 +31,7 @@ let metacollector = {
 let url = new URL(location.href);
 let collectorAddressParam = url.searchParams.get("collectoraddress");
 
-metacollector.iteration = parseInt(location.hash.substring(1))
+mc.iteration = parseInt(location.hash.substring(1))
 
 let collectionCanvas
 
@@ -41,15 +41,15 @@ let canvasHeight
 let imageLoadingCountdown
 
 if (collectorAddressParam) {
-    metacollector.walletAddress = collectorAddressParam;
+    mc.walletAddress = collectorAddressParam;
 }
-if (!metacollector.walletAddress) {
-    metacollector.walletAddress = ""
+if (!mc.walletAddress) {
+    mc.walletAddress = ""
 }
 
-if (!Number.isInteger(metacollector.iteration)) {
-    metacollector.iteration = 1
-    onIterationUpdated(metacollector.iteration)
+if (!Number.isInteger(mc.iteration)) {
+    mc.iteration = 1
+    onIterationUpdated(mc.iteration)
 }
 
 if (document.readyState === 'loading') {
@@ -61,7 +61,7 @@ if (document.readyState === 'loading') {
 
 function init() {
 
-    document.getElementById('collectoraddress').value = metacollector.walletAddress;
+    document.getElementById('collectoraddress').value = mc.walletAddress;
 
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('resize', onWindowResized);
@@ -91,8 +91,8 @@ function onCanvasReady(mutationList, observer) {
 
         onWindowResized()
 
-        if (metacollector.walletAddress) {
-            fetchCollectorData(metacollector.walletAddress)
+        if (mc.walletAddress) {
+            fetchCollectorData(mc.walletAddress)
         }
         else {
             noTokensToShow()
@@ -104,7 +104,7 @@ function onCanvasReady(mutationList, observer) {
 
 function noTokensToShow() {
 
-    if (metacollector.artfragments.length > 0) { return }
+    if (mc.artfragments.length > 0) { return }
 
     // manage no tokens found
     document.getElementById('nofragment').style.display = "block"
@@ -140,13 +140,13 @@ function onKeyDown(event) {
 
 function onUserEnteredCollectorAddress() {
 
-    metacollector.walletAddress = document.getElementById('collectoraddress').value;
+    mc.walletAddress = document.getElementById('collectoraddress').value;
 
-    url.searchParams.set("collectoraddress", metacollector.walletAddress);
+    url.searchParams.set("collectoraddress", mc.walletAddress);
 
     window.history.replaceState({}, '', url.toString());
 
-    fetchCollectorData(metacollector.walletAddress)
+    fetchCollectorData(mc.walletAddress)
 }
 
 function renderSandboxCanvas(url) {
@@ -162,11 +162,11 @@ function renderSandboxCanvas(url) {
 }
 
 function iterateMetacollector(event) {
-    metacollector.iteration++
-    console.log(metacollector.iteration)
-    paintCollectionUsingClone(metacollector)
+    mc.iteration++
+    console.log(mc.iteration)
+    paintCollectionUsingClone(mc)
     noTokensToShow()
-    onIterationUpdated(metacollector.iteration)
+    onIterationUpdated(mc.iteration)
 }
 
 function onIterationUpdated(iteration) {
@@ -174,12 +174,12 @@ function onIterationUpdated(iteration) {
     iteration = !iteration ? "" : iteration
     url.hash = iteration
     window.history.replaceState({}, '', url.toString());
-    metacollector.iteration = parseInt(location.hash.substring(1))
+    mc.iteration = parseInt(location.hash.substring(1))
 }
 
 function fetchCollectorData(userInputCollectorAddress) {
 
-    nftQuery = fetchTokens(userInputCollectorAddress)
+    let nftQuery = fetchTokens(userInputCollectorAddress)
 
     nftQuery
         .then(
@@ -228,12 +228,12 @@ function onWindowResized() {
         collectionCanvas.height = canvasHeight
         collectionCanvas.style.width = canvasWidth / pixelDensity + "px"
         collectionCanvas.style.height = canvasHeight / pixelDensity + "px"
-        metacollector.canvas.visualWidth = canvasWidth / pixelDensity
-        metacollector.canvas.visualHeight = canvasWidth / pixelDensity
+        mc.canvas.visualWidth = canvasWidth / pixelDensity
+        mc.canvas.visualHeight = canvasWidth / pixelDensity
         collectionCanvas.style.height = canvasHeight / pixelDensity + "px"
-        metacollector.canvas.pixelWidth = canvasWidth
-        metacollector.canvas.pixelHeight = canvasWidth
-        paintCollectionUsingClone(metacollector)
+        mc.canvas.pixelWidth = canvasWidth
+        mc.canvas.pixelHeight = canvasWidth
+        paintCollectionUsingClone(mc)
     }
 }
 
@@ -383,12 +383,12 @@ function parseTokens(tokens) {
     const ipfsGatewayAlt = "https://ipfs.fleek.co/ipfs/" // to use as a fallback
 
 
-    metacollector.artfragments = []; // clearing the local data
+    mc.artfragments = []; // clearing the local data
 
     console.log(tokens)
 
     if (tokens.length < 1) {
-        paintCollectionUsingClone(metacollector)
+        paintCollectionUsingClone(mc)
         noTokensToShow()
         return
     }
@@ -408,7 +408,7 @@ function parseTokens(tokens) {
 
             flattenedObject.colors = []
 
-            for (obj of attributelist) {
+            for (let obj of attributelist) {
 
                 // console.log(obj.attribute)
 
@@ -457,7 +457,7 @@ function parseTokens(tokens) {
                         let ctx = collectionCanvas.getContext('2d')
                         ctx.resetTransform()
                         ctx.clearRect(0, 0, collectionCanvas.width, collectionCanvas.height)
-                        paintCollectionUsingClone(metacollector)
+                        paintCollectionUsingClone(mc)
                     }
                 }
             )
@@ -491,7 +491,7 @@ function loadingMessage(countdown, nextName) {
     ctx.resetTransform()
     ctx.clearRect(0, 0, collectionCanvas.width, collectionCanvas.height)
 
-    paintCollection(metacollector)
+    paintCollection(mc)
 
     ctx.resetTransform()
     ctx.font = `${(collectionCanvas.width / 20)}px sans-serif`
@@ -536,7 +536,7 @@ function pushImage(bitmap, thisToken, parsedAttributes) {
             fragment.imageP5 = createP5Image(bitmap)
         }
 
-        metacollector.artfragments.push(fragment)
+        mc.artfragments.push(fragment)
     }
 }
 
@@ -631,7 +631,7 @@ function createP5Image(bitmap) {
         };
     }
 
-})(this);
+})(self);
 
 // MurmurHash3
 
