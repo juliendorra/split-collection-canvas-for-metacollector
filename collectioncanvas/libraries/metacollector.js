@@ -481,6 +481,7 @@ function paintCollectionUsingClone(metacollector) {
     clonedMetacollector.seed = xmur3(metacollector.walletAddress)()
 
     clonedMetacollector.random = new aleaPRNG(metacollector.walletAddress)
+    clonedMetacollector.randomIteration = new aleaPRNG(metacollector.iteration)
 
     paintCollection(clonedMetacollector)
 }
