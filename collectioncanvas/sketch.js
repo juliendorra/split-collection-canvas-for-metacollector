@@ -102,6 +102,10 @@ function paintCollection(metacollector) {
 
         ctx.translate(positionX, positionY)
 
+        // introduce a slight rotation for each iteration (ie. when user click on canvas). Deterministic
+        const clipRotate = (metacollector.randomIteration() - 0.5) * Math.PI / 18 //  10º range, -5º to 5º
+        ctx.rotate(clipRotate)
+
         // Create a clipping paths
         let circlesPath = new Path2D();
         circlesPath.ellipse(
@@ -149,6 +153,11 @@ function paintCollection(metacollector) {
 
         ctx.rotate(fragment.attributes.direction);
         ctx.translate(-centerX, -centerY) // centering to center of image
+
+        // introduce a shift in position for each iteration (ie. when user click on canvas). Deterministic
+        const shiftX = (fragmentPixelWidth / 10) * (metacollector.randomIteration() - 0.5)
+        const shiftY = (fragmentPixelHeight / 4) * (metacollector.randomIteration() - 0.5)
+        ctx.translate(shiftX, shiftY)
 
         // draw fragment
         ctx.drawImage(fragment.imageBitmap,
