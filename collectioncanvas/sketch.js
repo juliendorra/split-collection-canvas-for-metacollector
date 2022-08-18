@@ -123,6 +123,7 @@ function paintCollection(metacollector) {
             6.2,
             0, 2 * Math.PI); // could use direction as it's an angle
 
+        circlesPath.rect(-width, -positionY, width, height) // fill the left of the clipping to avoid sseing background on top with fragments and clip zone positioned at the bottom
 
         // Set the clip to the circles
         ctx.clip(circlesPath);
